@@ -73,8 +73,8 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
       }
     }
 
-    const target_protocol = new URL(this._config.url, location.toString())
-      .protocol;
+    const target_url = new URL(this._config.url, location.toString());
+    const target_protocol = target_url.protocol;
     if (location.protocol === "https:" && target_protocol !== "https:") {
       return html`
         <ha-alert alert-type="error">
@@ -84,6 +84,20 @@ export class HuiIframeCard extends LitElement implements LovelaceCard {
               target_protocol,
               context_protocol: location.protocol,
             }
+          )}
+        </ha-alert>
+      `;
+    }
+
+    // Disabling the sandbox on a same-origin URL lets the embedded page script
+    // the Home Assistant document (and reach the user's session/tokens). The
+    // default sandbox also combines allow-same-origin + allow-scripts, so only
+    // refuse the explicit disable_sandbox opt-in here.
+    if (this._config.disable_sandbox && target_url.origin === location.origin) {
+      return html`
+        <ha-alert alert-type="error">
+          ${this.hass!.localize(
+            "ui.panel.lovelace.cards.iframe.error_disable_sandbox_same_origin"
           )}
         </ha-alert>
       `;

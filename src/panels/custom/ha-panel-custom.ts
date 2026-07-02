@@ -167,7 +167,6 @@ export class HaPanelCustom extends ReactiveElement {
     }
 
     window.customPanel = this;
-    const titleAttr = this.panel.title ? `title="${this.panel.title}"` : "";
     this.innerHTML = `
       <style>
         iframe {
@@ -184,8 +183,14 @@ export class HaPanelCustom extends ReactiveElement {
           opacity: 1;
         }
       </style>
-      <iframe ${titleAttr}></iframe>`.trim();
-    const iframeDoc = this.querySelector("iframe")!.contentWindow!.document;
+      <iframe></iframe>`.trim();
+    const iframe = this.querySelector("iframe")!;
+    // Set the title via the DOM API so a title containing quotes/markup cannot
+    // break out of the attribute and inject arbitrary HTML.
+    if (this.panel.title) {
+      iframe.title = this.panel.title;
+    }
+    const iframeDoc = iframe.contentWindow!.document;
     iframeDoc.open();
     iframeDoc.write(
       `<!doctype html><script src='${window.customPanelJS}'></script>`

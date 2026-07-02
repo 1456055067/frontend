@@ -8771,7 +8771,8 @@
             "more_info": "Show more info: {name}"
           },
           "iframe": {
-            "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}."
+            "error_secure_context": "Unable to load iframes pointing at websites using {target_protocol} if Home Assistant is served over {context_protocol}.",
+            "error_disable_sandbox_same_origin": "For security reasons, the iframe sandbox cannot be disabled for a URL on the same origin as Home Assistant, as it would allow the embedded page to access your session."
           },
           "recovery-mode": {
             "header": "Recovery mode activated",
