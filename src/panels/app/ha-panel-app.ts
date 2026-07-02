@@ -7,6 +7,7 @@ import { createRef, ref } from "lit/directives/ref";
 import memoizeOne from "memoize-one";
 import { fireEvent } from "../../common/dom/fire_event";
 import { navigate } from "../../common/navigate";
+import { isNavigationPath } from "../../common/url/is-navigation-path";
 import { computeRouteTail } from "../../common/url/route";
 import { nextRender } from "../../common/util/render-status";
 import "../../components/ha-icon-button";
@@ -416,11 +417,7 @@ class HaPanelApp extends LitElement {
         // Only allow navigation to in-app (same-origin) relative paths.
         // Reject absolute URLs, protocol-relative ("//host") and scheme
         // (e.g. "javascript:") targets.
-        if (
-          typeof data.path === "string" &&
-          data.path.startsWith("/") &&
-          !data.path.startsWith("//")
-        ) {
+        if (isNavigationPath(data.path)) {
           navigate(data.path, data.options);
         }
         break;
