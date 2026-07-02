@@ -39,6 +39,14 @@ const renderMarkdown = async (
 
   if (hassOptions.allowSvg) {
     if (!whiteListSvg) {
+      // Event handlers, <script> and javascript: URLs are still stripped by
+      // the XSS filter, so this does not enable script execution. However,
+      // `img[src]` (and svg) allow loading arbitrary external URLs. When SVG is
+      // enabled for content that a third-party/custom integration controls
+      // (e.g. config/options/repair flow descriptions), that integration can
+      // cause the browser to issue GET requests to attacker-chosen hosts
+      // (referrer leakage / tracking / CSRF-style requests to internal hosts).
+      // Only enable allowSvg for content you trust to that degree.
       whiteListSvg = {
         ...whiteListNormal,
         svg: ["xmlns", "height", "width"],
