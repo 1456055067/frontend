@@ -1,3 +1,4 @@
+import { sanitizeUrl } from "@braintree/sanitize-url";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import { forwardHaptic } from "../../../data/haptics";
@@ -133,7 +134,10 @@ export const handleAction = async (
       break;
     case "url": {
       if (actionConfig.url_path) {
-        window.open(actionConfig.url_path);
+        // Sanitize the URL to block dangerous schemes (e.g. javascript:), and
+        // pass "noreferrer" so the opened page cannot access window.opener
+        // (reverse tabnabbing) or leak the referrer.
+        window.open(sanitizeUrl(actionConfig.url_path), "_blank", "noreferrer");
       } else {
         showToast(node, {
           message: hass.localize("ui.panel.lovelace.cards.actions.no_url"),

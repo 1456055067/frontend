@@ -66,9 +66,7 @@ export class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
             background-color: var(--primary-background-color, #fafafa);
           }
         </style>
-        <ha-alert alert-type="error"
-          >${this._error} ${this.redirectUri}</ha-alert
-        >
+        <ha-alert alert-type="error">${this._error}</ha-alert>
       `;
     }
 

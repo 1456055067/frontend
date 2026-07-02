@@ -400,14 +400,29 @@ class HaPanelApp extends LitElement {
   }
 
   private _handleIframeMessage = (event: MessageEvent) => {
-    if (event.source !== this._iframeRef.value?.contentWindow) {
+    // The ingress iframe is served same-origin through the HA ingress proxy,
+    // so only accept messages from our own origin. This prevents a document
+    // that navigated the frame cross-origin from driving navigation/kiosk mode.
+    if (
+      event.origin !== location.origin ||
+      event.source !== this._iframeRef.value?.contentWindow
+    ) {
       return;
     }
     const { type, ...data } = event.data;
 
     switch (type) {
       case "home-assistant/navigate":
-        navigate(data.path, data.options);
+        // Only allow navigation to in-app (same-origin) relative paths.
+        // Reject absolute URLs, protocol-relative ("//host") and scheme
+        // (e.g. "javascript:") targets.
+        if (
+          typeof data.path === "string" &&
+          data.path.startsWith("/") &&
+          !data.path.startsWith("//")
+        ) {
+          navigate(data.path, data.options);
+        }
         break;
 
       case "home-assistant/toggle-menu":
@@ -444,7 +459,9 @@ class HaPanelApp extends LitElement {
         narrow: this.narrow,
         route: this._computeRouteTail(this.route),
       },
-      "*"
+      // Ingress content is same-origin; scope the message to our origin
+      // instead of broadcasting with "*".
+      location.origin
     );
   }
 
