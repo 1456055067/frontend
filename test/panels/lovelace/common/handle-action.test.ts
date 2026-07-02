@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { handleAction } from "../../../../src/panels/lovelace/common/handle-action";
+import type { ActionConfig } from "../../../../src/data/lovelace/config/action";
 import type { HomeAssistant } from "../../../../src/types";
 
 // Minimal hass stub; the "url" action path only needs a node and the config.
@@ -25,7 +26,7 @@ describe("handleAction url action", () => {
     handleAction(
       node,
       hass,
-      { tap_action: { action: "url", url_path } },
+      { tap_action: { action: "url", url_path } as ActionConfig },
       "tap"
     );
 
@@ -54,6 +55,7 @@ describe("handleAction url action", () => {
     expect(openSpy).toHaveBeenCalledOnce();
     const openedUrl = openSpy.mock.calls[0][0] as string;
     // sanitizeUrl neutralizes dangerous schemes (currently to "about:blank").
+    // eslint-disable-next-line no-script-url
     expect(openedUrl.startsWith("javascript:")).toBe(false);
   });
 
