@@ -8,7 +8,7 @@
  *   yarn test:e2e:gallery
  */
 import { test, expect, type Page } from "@playwright/test";
-import { QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
+import { PANEL_TIMEOUT, QUICK_TIMEOUT, SHELL_TIMEOUT } from "./helpers";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -316,6 +316,26 @@ test.describe("Component interactions", () => {
     await expect(demo).toBeAttached({ timeout: SHELL_TIMEOUT });
     await expect(demo.locator("hui-tile-card").first()).toBeAttached({
       timeout: QUICK_TIMEOUT,
+    });
+  });
+
+  test("iframe-card blocks disable_sandbox on a same-origin URL", async ({
+    page,
+  }) => {
+    await goToGalleryPage(page, "lovelace/iframe-card");
+    const demo = page.locator("ha-gallery >> demo-lovelace-iframe-card");
+    await expect(demo).toBeAttached({ timeout: SHELL_TIMEOUT });
+
+    // The "same-origin (blocked)" card must refuse to embed and show an error
+    // alert instead of an iframe (security guard against sandbox escape).
+    await expect(
+      demo.locator('hui-iframe-card ha-alert[alert-type="error"]').first()
+    ).toBeAttached({ timeout: PANEL_TIMEOUT });
+
+    // The cross-origin cards (including the "sandbox disabled" one) still
+    // render a real iframe, confirming only same-origin is blocked.
+    await expect(demo.locator("hui-iframe-card iframe").first()).toBeAttached({
+      timeout: PANEL_TIMEOUT,
     });
   });
 

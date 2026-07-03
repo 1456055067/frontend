@@ -36,6 +36,22 @@ const CONFIGS = [
   aspect_ratio: 100%
     `,
   },
+  {
+    heading: "Sandbox disabled, cross-origin (allowed)",
+    config: `
+- type: iframe
+  url: https://embed.windy.com/embed2.html
+  disable_sandbox: true
+    `,
+  },
+  {
+    heading: "Sandbox disabled, same-origin (blocked)",
+    config: `
+- type: iframe
+  url: /
+  disable_sandbox: true
+    `,
+  },
 ];
 
 @customElement("demo-lovelace-iframe-card")
